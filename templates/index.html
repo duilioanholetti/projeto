@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sistema de Agendamento Médico Online</title>
+<link rel="stylesheet" href="/static/styles_index.css">
+</head>
+<body>
+<header>
+  Sistema de Agendamento Médico Online
+</header>
+<main>
+  <nav aria-label="Navegação principal">
+    <button class="tab-btn active" data-tab="login" aria-selected="true" aria-controls="login" role="tab" id="tab-login">Login</button>
+    <button class="tab-btn" data-tab="paciente" aria-selected="false" aria-controls="paciente" role="tab" id="tab-paciente">Área do Paciente</button>
+    <button class="tab-btn" data-tab="medico" aria-selected="false" aria-controls="medico" role="tab" id="tab-medico">Área do Médico</button>
+    <button class="tab-btn" data-tab="admin" aria-selected="false" aria-controls="admin" role="tab" id="tab-admin">Área Administrativa</button>
+  </nav>
+
+  <!-- Login Section -->
+  <section id="login" class="active" role="tabpanel" aria-labelledby="tab-login" tabindex="0">
+    <h2>Fazer Login</h2>
+    <form id="loginForm" novalidate>
+      <label for="userType">Perfil</label>
+      <select id="userType" required>
+        <option value="" disabled selected>Selecione seu perfil</option>
+        <option value="paciente">Paciente</option>
+        <option value="medico">Médico</option>
+        <option value="admin">Administração</option>
+      </select>
+
+      <label for="username">Nome de Usuário</label>
+      <input type="text" id="username" name="username" placeholder="Digite seu usuário" required autocomplete="username" />
+
+      <label for="password">Senha</label>
+      <input type="password" id="password" name="password" placeholder="Digite sua senha" required autocomplete="current-password" />
+
+      <button type="submit" class="submit-btn">Entrar</button>
+      <p id="loginError" class="error-msg" style="display:none;"></p>
+
+      <small style="display: block; margin-top:1rem; font-weight: 500; color: #555;">
+        Usuários para teste:<br/>
+        Paciente: <b>paciente1 / 123</b><br/>
+        Médico: <b>medico1 / 123</b><br/>
+        Administração: <b>admin1 / 123</b>
+      </small>
+    </form>
+  </section>
+
+  <!-- Paciente Section -->
+  <section id="paciente" role="tabpanel" aria-labelledby="tab-paciente" tabindex="-1">
+    <h2>Área do Paciente</h2>
+    <p id="pacienteWelcome" style="font-weight: 700; margin-bottom: 1rem;"></p>
+
+    <form id="agendarConsultaForm">
+      <h3>Agendar Consulta</h3>
+      <label for="especialidadeSelect">Especialidade</label>
+      <select id="especialidadeSelect" required>
+        <option value="" disabled selected>Selecione uma especialidade</option>
+      </select>
+
+      <label for="medicoSelect">Médico</label>
+      <select id="medicoSelect" required>
+        <option value="" disabled selected>Selecione um médico</option>
+      </select>
+
+      <label for="dataConsulta">Data da Consulta</label>
+      <input type="date" id="dataConsulta" required min="" />
+
+      <label for="horaConsulta">Hora da Consulta</label>
+      <select id="horaConsulta" required>
+        <option value="" disabled selected>Selecione o horário</option>
+      </select>
+
+      <button type="submit" class="submit-btn">Agendar</button>
+    </form>
+
+    <h3>Consultas Agendadas</h3>
+    <ul class="list" id="consultasPacienteList"></ul>
+
+    <h3>Histórico de Consultas</h3>
+    <ul class="list" id="historicoPacienteList"></ul>
+  </section>
+
+  <!-- Médico Section -->
+  <section id="medico" role="tabpanel" aria-labelledby="tab-medico" tabindex="-1">
+    <h2>Área do Médico</h2>
+    <p id="medicoWelcome" style="font-weight: 700; margin-bottom: 1rem;"></p>
+
+    <label for="medicoDataFiltro">Filtrar por data</label>
+    <input type="date" id="medicoDataFiltro" min="" style="margin-bottom: 1rem; padding: 8px 10px; border-radius: 8px; border: 1.8px solid #ccd6dd; font-size: 1rem; width: auto;"/>
+
+    <ul class="list" id="agendaMedicoList"></ul>
+  </section>
+
+  <!-- Administração Section -->
+  <section id="admin" role="tabpanel" aria-labelledby="tab-admin" tabindex="-1">
+    <h2>Área Administrativa</h2>
+
+    <form id="cadastrarMedicoForm">
+      <h3>Cadastrar Médico</h3>
+      <label for="nomeMedico">Nome do Médico</label>
+      <input type="text" id="nomeMedico" required />
+      <label for="especialidadeMedico">Especialidade</label>
+      <select id="especialidadeMedico" required>
+        <option value="" disabled selected>Selecione especialidade</option>
+      </select>
+      <button type="submit" class="submit-btn">Cadastrar Médico</button>
+    </form>
+
+    <form id="cadastrarEspecialidadeForm" style="margin-top: 2rem;">
+      <h3>Cadastrar Especialidade</h3>
+      <label for="nomeEspecialidade">Nome da Especialidade</label>
+      <input type="text" id="nomeEspecialidade" required />
+      <button type="submit" class="submit-btn">Cadastrar Especialidade</button>
+    </form>
+
+    <section id="listaMedicosArea" style="margin-top: 2rem;">
+      <h3>Médicos Cadastrados</h3>
+      <ul class="list" id="listaMedicos"></ul>
+    </section>
+
+    <section id="relatoriosArea" style="margin-top: 2rem;">
+      <h3>Relatórios simples</h3>
+      <p>Quantidade total de consultas por especialidade:</p>
+      <div class="table-container">
+        <table id="relatorioConsultas">
+          <thead>
+            <tr>
+              <th>Especialidade</th>
+              <th>Quantidade de Consultas</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script>
+  // STATE AND STORAGE KEYS
+  const STORAGE_KEYS = {
+    users: 'sa_users',
+    medicos: 'sa_medicos',
+    especialidades: 'sa_especialidades',
+    consultas: 'sa_consultas',
+    consultasHistorico: 'sa_consultas_historico'
+  };
+
+  let currentUser = null;
+
+  // UTILITIES
+  function loadData(key) {
+    let data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : [];
+  }
+  function saveData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+  function sanitizeString(str) {
+    return str.trim();
+  }
+  // Init date min
+  function setTodayMinDate() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dataConsulta').min = today;
+    document.getElementById('medicoDataFiltro').min = today;
+  }
+  setTodayMinDate();
+
+  // LOGIN SYSTEM SIMPLIFIED
+  const loginForm = document.getElementById('loginForm');
+  const userTypeSelect = document.getElementById('userType');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const loginError = document.getElementById('loginError');
+
+  // Default user database (simulate some users)
+  if(!loadData(STORAGE_KEYS.users).length) {
+    saveData(STORAGE_KEYS.users, [
+      {username:'paciente1', password:'123', role:'paciente', name:'Paciente Um'},
+      {username:'medico1', password:'123', role:'medico', name:'Dr. João'},
+      {username:'admin1', password:'123', role:'admin', name:'Administração'},
+    ]);
+  }
+
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+    loginError.style.display = 'none';
+    const selectedRole = userTypeSelect.value;
+    const username = sanitizeString(usernameInput.value);
+    const password = passwordInput.value;
+
+    if(!selectedRole || !username || !password) {
+      loginError.textContent = 'Preencha todos os campos.';
+      loginError.style.display = 'block';
+      return;
+    }
+    const users = loadData(STORAGE_KEYS.users);
+    const user = users.find(u => u.username === username && u.password === password && u.role === selectedRole);
+    if(user) {
+      currentUser = user;
+      switchTab(selectedRole);
+      displayUserWelcome();
+      refreshViews();
+    } else {
+      loginError.textContent = 'Usuário ou senha inválidos para o perfil selecionado.';
+      loginError.style.display = 'block';
+    }
+  });
+
+  // NAVIGATION TABS
+  const tabs = document.querySelectorAll('nav button.tab-btn');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      if(tab.dataset.tab !== currentUser?.role && tab.dataset.tab !== 'login') {
+        alert('Acesso negado! Faça login com o perfil apropriado para acessar essa área.');
+        return;
+      }
+      switchTab(tab.dataset.tab);
+    });
+  });
+  function switchTab(tabName) {
+    tabs.forEach(t => {
+      t.classList.toggle('active', t.dataset.tab === tabName);
+      t.setAttribute('aria-selected', t.dataset.tab === tabName ? 'true' : 'false');
+    });
+    document.querySelectorAll('main > section').forEach(sec => {
+      sec.classList.toggle('active', sec.id === tabName);
+      sec.tabIndex = sec.id === tabName ? 0 : -1;
+    });
+    if(tabName === 'login') {
+      currentUser = null;
+      loginForm.reset();
+      loginError.style.display = 'none';
+      clearWelcomeMessages();
+    }
+  }
+  function clearWelcomeMessages() {
+    document.getElementById('pacienteWelcome').textContent = '';
+    document.getElementById('medicoWelcome').textContent = '';
+  }
+
+  // PACIENTE LOGIC
+  const especialidadeSelect = document.getElementById('especialidadeSelect');
+  const medicoSelect = document.getElementById('medicoSelect');
+  const horaConsultaSelect = document.getElementById('horaConsulta');
+  const agendarConsultaForm = document.getElementById('agendarConsultaForm');
+  const consultasPacienteList = document.getElementById('consultasPacienteList');
+  const historicoPacienteList = document.getElementById('historicoPacienteList');
+  const pacienteWelcome = document.getElementById('pacienteWelcome');
+
+  agendarConsultaForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const especialidade = especialidadeSelect.value;
+    const medicoId = medicoSelect.value;
+    const data = document.getElementById('dataConsulta').value;
+    const hora = horaConsultaSelect.value;
+
+    if(!especialidade || !medicoId || !data || !hora) {
+      alert('Preencha todos os campos para agendar a consulta.');
+      return;
+    }
+
+    const consultas = loadData(STORAGE_KEYS.consultas);
+    const conflito = consultas.find(c => c.medicoId === medicoId && c.data === data && c.hora === hora);
+    if(conflito) {
+      alert('Já existe uma consulta agendada nesse horário com este médico.');
+      return;
+    }
+
+    consultas.push({
+      id: Date.now().toString(),
+      pacienteUsername: currentUser.username,
+      medicoId,
+      especialidade,
+      data,
+      hora,
+      status: 'agendada',
+      observacoes: ''
+    });
+
+    saveData(STORAGE_KEYS.consultas, consultas);
+    alert('Consulta agendada com sucesso!');
+    agendarConsultaForm.reset();
+    loadMedicosSelect();
+    loadPacienteConsultas();
+  });
+
+  especialidadeSelect.addEventListener('change', () => {
+    loadMedicosSelect();
+  });
+
+  medicoSelect.addEventListener('change', () => {
+    loadHorasDisponiveis();
+  });
+
+  function loadMedicosSelect() {
+    medicoSelect.innerHTML = '<option value="" disabled selected>Selecione um médico</option>';
+    const medicos = loadData(STORAGE_KEYS.medicos);
+    const especialidade = especialidadeSelect.value;
+    const filtered = medicos.filter(m => m.especialidade === especialidade);
+    filtered.forEach(medico => {
+      const option = document.createElement('option');
+      option.value = medico.id;
+      option.textContent = medico.nome;
+      medicoSelect.appendChild(option);
+    });
+    loadHorasDisponiveis();
+  }
+
+  function loadHorasDisponiveis() {
+    horaConsultaSelect.innerHTML = '<option value="" disabled selected>Selecione o horário</option>';
+    const horarios = ['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00'];
+    const medicoId = medicoSelect.value;
+    const data = document.getElementById('dataConsulta').value;
+
+    if(!medicoId || !data) return;
+
+    const consultas = loadData(STORAGE_KEYS.consultas);
+    const ocupados = consultas.filter(c => c.medicoId === medicoId && c.data === data).map(c => c.hora);
+    horarios.forEach(hora => {
+      if(!ocupados.includes(hora)) {
+        const option = document.createElement('option');
+        option.value = hora;
+        option.textContent = hora;
+        horaConsultaSelect.appendChild(option);
+      }
+    });
+  }
+
+  document.getElementById('dataConsulta').addEventListener('change', loadHorasDisponiveis);
+
+  function loadPacienteConsultas() {
+    consultasPacienteList.innerHTML = '';
+    historicoPacienteList.innerHTML = '';
+    const consultas = loadData(STORAGE_KEYS.consultas);
+    const historico = loadData(STORAGE_KEYS.consultasHistorico);
+    const pacienteConsultas = consultas.filter(c => c.pacienteUsername === currentUser.username && c.status === 'agendada');
+    const pacienteHistorico = historico.filter(c => c.pacienteUsername === currentUser.username);
+
+    if(pacienteConsultas.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'Nenhuma consulta agendada.';
+      consultasPacienteList.appendChild(li);
+    } else {
+      pacienteConsultas.forEach(c => {
+        const medicos = loadData(STORAGE_KEYS.medicos);
+        const medico = medicos.find(m => m.id === c.medicoId);
+        const li = document.createElement('li');
+        li.textContent = `${c.data} ${c.hora} - ${c.especialidade} com ${medico ? medico.nome : 'Médico'}`;
+        const btnCancelar = document.createElement('button');
+        btnCancelar.textContent = 'Cancelar';
+        btnCancelar.addEventListener('click', () => cancelarConsulta(c.id));
+        li.appendChild(btnCancelar);
+        consultasPacienteList.appendChild(li);
+      });
+    }
+    if(pacienteHistorico.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'Nenhum histórico de consultas.';
+      historicoPacienteList.appendChild(li);
+    } else {
+      pacienteHistorico.forEach(c => {
+        const medicos = loadData(STORAGE_KEYS.medicos);
+        const medico = medicos.find(m => m.id === c.medicoId);
+        const li = document.createElement('li');
+        li.textContent = `${c.data} ${c.hora} - ${c.especialidade} com ${medico ? medico.nome : 'Médico'} (Realizada)`;
+        historicoPacienteList.appendChild(li);
+      });
+    }
+  }
+
+  function cancelarConsulta(consultaId) {
+    const consultas = loadData(STORAGE_KEYS.consultas);
+    const consulta = consultas.find(c => c.id === consultaId);
+    if(!consulta) return;
+    const hoje = new Date();
+    const dataConsulta = new Date(consulta.data + 'T' + consulta.hora + ':00');
+    const diffMs = dataConsulta - hoje;
+    const diffHours = diffMs / (1000 * 60 * 60);
+    if(diffHours < 24) {
+      alert('Não é possível cancelar a consulta com menos de 24h de antecedência.');
+      return;
+    }
+    const novasConsultas = consultas.filter(c => c.id !== consultaId);
+    saveData(STORAGE_KEYS.consultas, novasConsultas);
+    const historico = loadData(STORAGE_KEYS.consultasHistorico);
+    consulta.status = 'cancelada';
+    historico.push(consulta);
+    saveData(STORAGE_KEYS.consultasHistorico, historico);
+    alert('Consulta cancelada com sucesso!');
+    loadPacienteConsultas();
+  }
+
+  // Médico logic
+  const medicoDataFiltro = document.getElementById('medicoDataFiltro');
+  const agendaMedicoList = document.getElementById('agendaMedicoList');
+  const medicoWelcome = document.getElementById('medicoWelcome');
+
+  medicoDataFiltro.value = new Date().toISOString().split('T')[0];
+  medicoDataFiltro.min = medicoDataFiltro.value;
+
+  medicoDataFiltro.addEventListener('change', () => loadAgendaMedico());
+
+  function loadAgendaMedico() {
+    agendaMedicoList.innerHTML = '';
+    if(!currentUser || currentUser.role !== 'medico') return;
+    const consultas = loadData(STORAGE_KEYS.consultas);
+    const dataSelecionada = medicoDataFiltro.value;
+    const minhasConsultas = consultas.filter(c => c.medicoId === currentUser.id && c.data === dataSelecionada && c.status === 'agendada');
+    if(minhasConsultas.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'Nenhuma consulta para este dia.';
+      agendaMedicoList.appendChild(li);
+      return;
+    }
+    minhasConsultas.forEach(c => {
+      const pacientes = loadData(STORAGE_KEYS.users);
+      const paciente = pacientes.find(p => p.username === c.pacienteUsername);
+      const li = document.createElement('li');
+      li.textContent = `${c.hora} - Paciente: ${paciente ? paciente.name : c.pacienteUsername}`;
+      const btnConfirmar = document.createElement('button');
+      btnConfirmar.textContent = 'Confirmado';
+      btnConfirmar.classList.add('confirm');
+      btnConfirmar.title = 'Confirmar presença';
+      btnConfirmar.addEventListener('click', () => confirmarPresenca(c.id));
+      const btnAusencia = document.createElement('button');
+      btnAusencia.textContent = 'Ausente';
+      btnAusencia.title = 'Marcar ausência';
+      btnAusencia.addEventListener('click', () => marcarAusencia(c.id));
+      li.appendChild(btnConfirmar);
+      li.appendChild(btnAusencia);
+      agendaMedicoList.appendChild(li);
+    });
+  }
+
+  function confirmarPresenca(consultaId) {
+    processarConsultaFinalizada(consultaId, 'confirmado');
+  }
+  function marcarAusencia(consultaId) {
+    processarConsultaFinalizada(consultaId, 'ausente');
+  }
+  function processarConsultaFinalizada(consultaId, statusFinal) {
+    const consultas = loadData(STORAGE_KEYS.consultas);
+    const consultaIndex = consultas.findIndex(c => c.id === consultaId);
+    if(consultaIndex === -1) return;
+    const consulta = consultas.splice(consultaIndex, 1)[0];
+    consulta.status = statusFinal;
+    const historico = loadData(STORAGE_KEYS.consultasHistorico);
+    historico.push(consulta);
+    saveData(STORAGE_KEYS.consultasHistorico, historico);
+    saveData(STORAGE_KEYS.consultas, consultas);
+    alert(`Consulta marcada como: ${statusFinal}`);
+    loadAgendaMedico();
+  }
+
+  // Admin logic
+  const cadastrarMedicoForm = document.getElementById('cadastrarMedicoForm');
+  const cadastrarEspecialidadeForm = document.getElementById('cadastrarEspecialidadeForm');
+  const especialidadeMedicoSelect = document.getElementById('especialidadeMedico');
+  const listaMedicosUL = document.getElementById('listaMedicos');
+
+  if(!loadData(STORAGE_KEYS.especialidades).length) {
+    saveData(STORAGE_KEYS.especialidades, [
+      'Clínica Geral',
+      'Cardiologia',
+      'Dermatologia',
+    ]);
+  }
+  if(!loadData(STORAGE_KEYS.medicos).length) {
+    saveData(STORAGE_KEYS.medicos, [
+      {id:'medico1', nome:'Dr. João', especialidade:'Cardiologia'}
+    ]);
+  }
+  function atualizarEspecialidadeSelects() {
+    const especialidades = loadData(STORAGE_KEYS.especialidades);
+    especialidadeSelect.innerHTML = '<option value="" disabled selected>Selecione uma especialidade</option>';
+    especialidadeMedicoSelect.innerHTML = '<option value="" disabled selected>Selecione especialidade</option>';
+    especialidades.forEach(e => {
+      const option1 = document.createElement('option');
+      option1.value = e;
+      option1.textContent = e;
+      especialidadeSelect.appendChild(option1);
+      const option2 = document.createElement('option');
+      option2.value = e;
+      option2.textContent = e;
+      especialidadeMedicoSelect.appendChild(option2);
+    });
+  }
+  atualizarEspecialidadeSelects();
+
+  cadastrarEspecialidadeForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const nome = sanitizeString(document.getElementById('nomeEspecialidade').value);
+    if(!nome) return alert('Digite o nome da especialidade');
+    const especialidades = loadData(STORAGE_KEYS.especialidades);
+    if(especialidades.includes(nome)) {
+      alert('Especialidade já cadastrada.');
+      return;
+    }
+    especialidades.push(nome);
+    saveData(STORAGE_KEYS.especialidades, especialidades);
+    alert('Especialidade cadastrada com sucesso.');
+    cadastrarEspecialidadeForm.reset();
+    atualizarEspecialidadeSelects();
+  });
+
+  cadastrarMedicoForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const nome = sanitizeString(document.getElementById('nomeMedico').value);
+    const esp = especialidadeMedicoSelect.value;
+    if(!nome || !esp) return alert('Preencha todos os campos.');
+    const medicos = loadData(STORAGE_KEYS.medicos);
+    const id = 'medico' + Date.now();
+    medicos.push({id, nome, especialidade: esp});
+    saveData(STORAGE_KEYS.medicos, medicos);
+    alert('Médico cadastrado com sucesso.');
+    cadastrarMedicoForm.reset();
+    carregarListaMedicos();
+  });
+
+  function carregarListaMedicos() {
+    listaMedicosUL.innerHTML = '';
+    const medicos = loadData(STORAGE_KEYS.medicos);
+    medicos.forEach(m => {
+      const li = document.createElement('li');
+      li.textContent = `${m.nome} - ${m.especialidade}`;
+      listaMedicosUL.appendChild(li);
+    });
+  }
+  carregarListaMedicos();
+
+  function carregarRelatorios() {
+    const tbody = document.querySelector('#relatorioConsultas tbody');
+    tbody.innerHTML = '';
+    const consultas = loadData(STORAGE_KEYS.consultas);
+    const historico = loadData(STORAGE_KEYS.consultasHistorico);
+    const todas = consultas.concat(historico);
+
+    const contagem = {};
+    todas.forEach(c => {
+      if(!contagem[c.especialidade]) contagem[c.especialidade] = 0;
+      contagem[c.especialidade]++;
+    });
+
+    for(const [esp, count] of Object.entries(contagem)) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${esp}</td><td>${count}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+  carregarRelatorios();
+
+  function displayUserWelcome() {
+    if(!currentUser) return;
+    const userName = currentUser.name || currentUser.username;
+    const area = currentUser.role;
+    if(area === 'paciente') {
+      pacienteWelcome.textContent = `Bem-vindo(a), ${userName}!`;
+    } else if(area === 'medico') {
+      medicoWelcome.textContent = `Bem-vindo(a), ${userName}!`;
+    }
+  }
+
+  function refreshViews() {
+    if(currentUser.role === 'paciente') {
+      atualizarEspecialidadeSelects();
+      loadPacienteConsultas();
+    } else if(currentUser.role === 'medico') {
+      loadAgendaMedico();
+    } else if(currentUser.role === 'admin') {
+      carregarListaMedicos();
+      carregarRelatorios();
+    }
+  }
+</script>
+</body>
+</html>
+

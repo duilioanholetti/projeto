@@ -1,0 +1,194 @@
+  /* Reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0; font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #5b86e5, #36d1dc);
+    min-height: 100vh;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background-color: #1c3144;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-weight: 800;
+    font-size: 2rem;
+    color: #f5f6fa;
+    letter-spacing: 1.3px;
+  }
+  main {
+    flex-grow: 1;
+    max-width: 900px;
+    margin: 2rem auto 3rem;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem 3rem;
+    box-shadow:
+      0 14px 28px rgba(0,0,0,0.25),
+      0 10px 10px rgba(0,0,0,0.22);
+  }
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  nav button {
+    background: transparent;
+    border: 2.5px solid transparent;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #586776;
+    cursor: pointer;
+    padding: 0.55rem 1.4rem;
+    border-radius: 50px;
+    transition:
+      color 0.3s ease,
+      border-color 0.3s ease,
+      background-color 0.3s ease;
+  }
+  nav button.active, nav button:hover {
+    color: #36d1dc;
+    border-color: #36d1dc;
+    background-color: #e2f7fb;
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+  h2 {
+    font-weight: 800;
+    color: #1c3144;
+    margin-bottom: 1.3rem;
+    border-bottom: 3px solid #36d1dc;
+    padding-bottom: 0.4rem;
+    font-size: 1.9rem;
+  }
+  /* Form */
+  form {
+    background: #f7f9fb;
+    padding: 1.8rem 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    box-shadow:
+      0 4px 12px rgba(54, 209, 220, 0.2);
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.45rem;
+    font-size: 1rem;
+    color: #394a59;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 1.8px solid #ccd6dd;
+    border-radius: 8px;
+    margin-bottom: 1.2rem;
+    transition: border-color 0.25s ease;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #36d1dc;
+    outline: none;
+  }
+  button.submit-btn {
+    background-color: #36d1dc;
+    color: #fff;
+    border: none;
+    padding: 12px 0;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    width: 100%;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 12px rgba(54, 209, 220, 0.5);
+    transition: background-color 0.3s ease;
+  }
+  button.submit-btn:hover {
+    background-color: #299ea7;
+  }
+  /* Lists */
+  ul.list {
+    list-style: none;
+    padding-left: 0;
+  }
+  ul.list li {
+    background: #e9f4f7;
+    color: #394a59;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 1px 5px rgba(54, 209, 220, 0.2);
+  }
+  ul.list li button {
+    background-color: #f44336;
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+  }
+  ul.list li button.confirm {
+    background-color: #24a148;
+  }
+  ul.list li button:hover {
+    opacity: 0.85;
+  }
+  /* Tables */
+  .table-container {
+    overflow-x: auto;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%;
+    background: #f7f9fb;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+      0 6px 20px rgba(54,209,220,0.3);
+  }
+  th, td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #d0e6ef;
+    color: #394a59;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  th {
+    background-color: #36d1dc;
+    color: white;
+  }
+  /* Errors */
+  .error-msg {
+    color: #f44336;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+  }
+  /* Responsive */
+  @media(max-width: 720px) {
+    main {
+      margin: 1rem 1rem 2rem;
+      padding: 1.5rem 2rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
